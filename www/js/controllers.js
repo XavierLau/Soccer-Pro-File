@@ -60,7 +60,6 @@ angular.module('app.controllers', [])
 		$scope.players = {}; 
 		$scope.attributes = {};
 		$scope.playerGroup = []; // holds all the players
-		$scope.attendanceStatus = ["Present", "Late", "Absent"];
 		// alert($state.params.teamName);
 		$http({
 			method: "GET",
@@ -69,20 +68,36 @@ angular.module('app.controllers', [])
 		}).then(function success(response) {
 			$scope.players = response.data;
 			
-			for (var i = 0; i < $scope.players.length; i++) {
-				$scope.playerGroup[i] = {
-					name: $scope.players[i].FirstName + " " + $scope.players[i].LastName, // Assign the player a name
-					attendanceGroup:[], //  Holds a players attendance values
-					attitudeGroup: [], //  Holds a players attitude values
-					abilityGroup:[] //  Holds a players ability values
-				};
-				
-				// Assign the attendance values
-				for(var j = 0; j < $scope.attendanceStatus.length; j++){
-					$scope.playerGroup[i].attendanceGroup.push( "There are " + j + " sub-items here." ); // Push a button element in here
-				}
-			}
-			// alert(JSON.stringify($scope.players, null, 4));
+				// Gets the attributes for the current club
+				$http({
+					method: "GET",
+					url: "http://catchthedragon.ca/getattributes.php",
+					params: {TeamName: $state.params.teamName, select: ""}
+				}).then(
+				function success(response) {
+					// alert(response.data);
+					$scope.attributes = response.data;
+					
+					for (var i = 0; i < $scope.players.length; i++) {
+						$scope.playerGroup[i] = {
+							name: $scope.players[i].FirstName + " " + $scope.players[i].LastName, // Assign the player a name
+							attendanceGroup:["Present", "Late", "Absent"], //  Holds a players attendance values
+							attitudeGroup: ["Attitude"], //  Holds a players attitude values
+							abilityGroup:[] //  Holds a players ability values
+						};
+						
+						// Inserts grabbed attributes into each player's abilityGroup
+						for(var j = 0; j < $scope.attributes.length; j++){
+							$scope.playerGroup[i].abilityGroup.push($scope.attributes[j].Name);
+						}
+					}
+					// alert(JSON.stringify($scope.players, null, 4));
+					
+				}, 
+				function error(response) {
+					 // alert(response.statusText);
+				});	
+			
 		}, function error(response) {
 			// alert(response.statusText);
 		});

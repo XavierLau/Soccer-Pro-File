@@ -5,17 +5,20 @@
 
 		<ion-list>
 			<div ng-repeat="player in playerGroup">
+				<!-- Creates a click-able Player Menu. -->
 				<ion-item class="item-avatar item-icon-right" ng-class="{active: isGroupShown(player)}" ng-click="toggleGroup(player)">
 					{{player.name}}
 					<i class="icon ion-android-contact" ng-class="isGroupShown(player) ? 'ion-minus' : 'ion-plus'"></i>
 				</ion-item>
-				<form class="list">
-				<ion-item class="item-accordion" ng-repeat="abilValue in player.abilityGroup" ng-show="isGroupShown(player)">
-				{{abilValue}}
-					<div ng-bind-html="">
+				<!-- Creates the Sub-Menu for the Player based on the abilityGroup. -->
+				<form class="attenList">
+					<div ng-repeat="abilValue in player.abilityGroup">
+						<ion-item class="range range-positive" class="item-accordion" ng-show="isGroupShown(player)"> {{abilValue}}
+							<input type="range" value="3" min="1" max="5">
+						</ion-item>
 					</div>
-			    </ion-item>
 				</form>
+				
 			</div>
 		</ion-list>
 		
